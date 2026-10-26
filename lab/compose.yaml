@@ -10,7 +10,9 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: [CMD-SHELL, "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      # The entrypoint's temporary initialization server only accepts sockets.
+      # Require authenticated TCP access to the application database instead.
+      test: [CMD-SHELL, 'MYSQL_PWD="$$MYSQL_PASSWORD" mysql --protocol=TCP -h 127.0.0.1 -u"$$MYSQL_USER" "$$MYSQL_DATABASE" -e "SELECT 1" >/dev/null']
       interval: 5s
       timeout: 3s
       retries: 30

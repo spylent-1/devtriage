@@ -20,6 +20,10 @@ $env:DEVTRIAGE_TEST_RAG_DSN='postgresql://devtriage:test-only@localhost:15433/de
 
 `test-only` 只用于临时本地测试库。测试会替换其中的 `test` 语料，不能对业务数据库执行。
 
+## 冷启动问题与修复
+
+首次远端实验场检查发现 MySQL 初始化竞争：原 `mysqladmin ping -h localhost` 在临时 Socket 服务阶段就返回成功，应用在 TCP 3306 尚未就绪时启动并报连接拒绝。健康检查改为通过 TCP、使用应用账号连接 orders 库执行 `SELECT 1`。本机使用全新 `devtriage-release-cold` Compose 项目与数据卷冷启动，MySQL、Redis、应用均达到 healthy；远端使用全新 runner 再执行完整实验场检查。
+
 ## 安装与构建
 
 从 Git 待发布文件导出干净目录，创建独立虚拟环境后，按 README 的 Windows 命令安装锁定依赖与 editable 包，执行 doctor、五份手册入库、中文检索和八条检索集评测，均成功。`pip check` 无冲突。`python -m build --wheel --no-isolation --outdir tmp/release-wheel-20261026` 成功，wheel 含 README 元数据与 MIT LICENSE。旧 dist 中同名文件覆盖有权限限制，因此本次使用新的构建输出目录。
@@ -33,9 +37,9 @@ $env:DEVTRIAGE_TEST_RAG_DSN='postgresql://devtriage:test-only@localhost:15433/de
 | 正常日志 | insufficient | [报告](evidence/release-20261026/normal-report.md) |
 | 不匹配的源码 | insufficient | [报告](evidence/release-20261026/missing-source-report.md) |
 | 连接池 RAG 合成案例 | insufficient，保留独立知识引用 | [报告](evidence/release-20261026/rag-report.md) |
-| 实验场查询空值 | reproduced | [报告](evidence/release-20261026/case-1-report.md) |
-| 实验场唯一键冲突 | reproduced | [报告](evidence/release-20261026/case-2-report.md) |
-| 实验场缓存序列化 | reproduced | [报告](evidence/release-20261026/case-3-report.md) |
+| 实验场查询空值 | reproduced | [报告](evidence/release-20261026/case-1-report.md) / [JUnit](evidence/release-20261026/case-1-junit.xml) |
+| 实验场唯一键冲突 | reproduced | [报告](evidence/release-20261026/case-2-report.md) / [JUnit](evidence/release-20261026/case-2-junit.xml) |
+| 实验场缓存序列化 | reproduced | [报告](evidence/release-20261026/case-3-report.md) / [JUnit](evidence/release-20261026/case-3-junit.xml) |
 
 [逐项结果与任务 ID](evidence/release-20261026/summary.json)。三个实验场输入来自本次 HTTP 500 请求与容器日志；每份 reproduced 报告均包含实际实验结果及健康对照。RAG 案例缺少运行时指标，历史知识未被当成已确定的根因。
 
