@@ -1,0 +1,5 @@
+2026-10-23T12:00:00 ERROR traceId=sample-3-3 Order request failed
+org.springframework.data.redis.serializer.SerializationException: operation failed
+	at dev.triage.lab.OrderService.cache(OrderService.java:35)
+Caused by: java.io.StreamCorruptedException: invalid stream header: 7B226375
+INFO Request completed with failure

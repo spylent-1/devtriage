@@ -1,0 +1,287 @@
+{
+  "model": "deepseek-chat",
+  "prompt_version": "v1",
+  "verify": "none",
+  "items": [
+    {
+      "id": "case-1-1",
+      "run_id": "18c0bf3d2ea843a7a95cd29dec179047",
+      "status": "supported",
+      "scores": {
+        "root_cause": 1.0,
+        "location": 1.0,
+        "evidence_valid": 1.0,
+        "verification": null,
+        "abstention": 1.0
+      },
+      "seconds": 24.41,
+      "gaps": [
+        "未执行复现验证（verify=none），未获得 case-1 的复现结果与健康对照结果。",
+        "日志未包含请求的 businessNo 具体值，无法确认是订单缺失还是数据不一致导致空结果。",
+        "未获取数据库实际数据状态，无法排除 customer 列存在 NULL 值（尽管 schema 声明 NOT NULL）的可能。"
+      ],
+      "tokens": {
+        "prompt_tokens": 27466,
+        "completion_tokens": 3997,
+        "total_tokens": 31463
+      }
+    },
+    {
+      "id": "case-1-2",
+      "run_id": "b121bafc6b4049008ef6b09954f4de3f",
+      "status": "supported",
+      "scores": {
+        "root_cause": 1.0,
+        "location": 1.0,
+        "evidence_valid": 1.0,
+        "verification": null,
+        "abstention": 1.0
+      },
+      "seconds": 17.25,
+      "gaps": [
+        "未执行复现验证（verify=none），缺少运行时确认。",
+        "日志未包含入参 businessNo 与数据库查询结果，无法确认是订单不存在还是 customer 列为 NULL。"
+      ],
+      "tokens": {
+        "prompt_tokens": 22294,
+        "completion_tokens": 3466,
+        "total_tokens": 25760
+      }
+    },
+    {
+      "id": "case-1-3",
+      "run_id": "93105be0e5c1438ab0eac4c87129a60b",
+      "status": "supported",
+      "scores": {
+        "root_cause": 1.0,
+        "location": 1.0,
+        "evidence_valid": 1.0,
+        "verification": null,
+        "abstention": 1.0
+      },
+      "seconds": 14.2,
+      "gaps": [
+        "未获得数据库侧证据（orders 表中该 business_no 是否存在、customer 是否为 NULL），触发条件为源码推断。",
+        "未执行复现验证（verify=none），无 case-1 复现结果与健康对照结果。"
+      ],
+      "tokens": {
+        "prompt_tokens": 14157,
+        "completion_tokens": 3003,
+        "total_tokens": 17160
+      }
+    },
+    {
+      "id": "case-2-1",
+      "run_id": "cd4d44ebd21741e3a6c727c2ae60c409",
+      "status": "supported",
+      "scores": {
+        "root_cause": 1.0,
+        "location": 1.0,
+        "evidence_valid": 1.0,
+        "verification": null,
+        "abstention": 1.0
+      },
+      "seconds": 16.03,
+      "gaps": [
+        "未获得数据库侧实际数据，无法确认重复是客户端重试、并发提交还是上游重复投递导致。",
+        "本次 verify=none，未执行复现与健康对照，无法确认修复后行为。"
+      ],
+      "tokens": {
+        "prompt_tokens": 25213,
+        "completion_tokens": 3006,
+        "total_tokens": 28219
+      }
+    },
+    {
+      "id": "case-2-2",
+      "run_id": "7ff12ad9fa8e4a42849f4ec227301512",
+      "status": "supported",
+      "scores": {
+        "root_cause": 1.0,
+        "location": 1.0,
+        "evidence_valid": 1.0,
+        "verification": null,
+        "abstention": 1.0
+      },
+      "seconds": 14.92,
+      "gaps": [
+        "未获得数据库现有数据与请求重放记录，无法确认重复来源是客户端重试还是单号生成缺陷。",
+        "未执行复现验证（verify=none），缺少运行时确认。"
+      ],
+      "tokens": {
+        "prompt_tokens": 21277,
+        "completion_tokens": 2784,
+        "total_tokens": 24061
+      }
+    },
+    {
+      "id": "case-2-3",
+      "run_id": "8fef8ba903f94d0aa97def497c8db5a5",
+      "status": "supported",
+      "scores": {
+        "root_cause": 1.0,
+        "location": 1.0,
+        "evidence_valid": 1.0,
+        "verification": null,
+        "abstention": 1.0
+      },
+      "seconds": 13.42,
+      "gaps": [
+        "未获得数据库实际数据与请求重试、并发上下文，无法确认重复来源是重试、消息重投还是并发。",
+        "本次未执行复现验证（verify=none），缺少运行时复现结果。"
+      ],
+      "tokens": {
+        "prompt_tokens": 15957,
+        "completion_tokens": 2688,
+        "total_tokens": 18645
+      }
+    },
+    {
+      "id": "case-3-1",
+      "run_id": "a7e2da5b83594de489ac2a9b63fbc68c",
+      "status": "supported",
+      "scores": {
+        "root_cause": 1.0,
+        "location": 1.0,
+        "evidence_valid": 1.0,
+        "verification": null,
+        "abstention": 1.0
+      },
+      "seconds": 21.09,
+      "gaps": [
+        "未执行复现实验（verify=none），未获得 case-3 复现结果与健康对照",
+        "未检查 Redis 中该 key 的实际存量数据，无法确认是否存在其他格式的历史脏值"
+      ],
+      "tokens": {
+        "prompt_tokens": 28580,
+        "completion_tokens": 4208,
+        "total_tokens": 32788
+      }
+    },
+    {
+      "id": "case-3-2",
+      "run_id": "87e4c3bbaf2e44c39f992bc837538ae9",
+      "status": "supported",
+      "scores": {
+        "root_cause": 1.0,
+        "location": 1.0,
+        "evidence_valid": 1.0,
+        "verification": null,
+        "abstention": 1.0
+      },
+      "seconds": 20.11,
+      "gaps": [
+        "未执行复现实验（verify=none），未获得 case-3 复现与健康对照结果",
+        "未找到 application.yml 等 Redis 序列化配置，无法确认是否存在全局序列化器覆盖",
+        "日志中 Caused by 帧指向 DispatcherServlet.doDispatch，属框架帧，未提供更细的序列化器内部调用栈"
+      ],
+      "tokens": {
+        "prompt_tokens": 27861,
+        "completion_tokens": 4256,
+        "total_tokens": 32117
+      }
+    },
+    {
+      "id": "case-3-3",
+      "run_id": "cfd5e29f61c74d6591fd79c04ae7af2a",
+      "status": "supported",
+      "scores": {
+        "root_cause": 1.0,
+        "location": 1.0,
+        "evidence_valid": 1.0,
+        "verification": null,
+        "abstention": 1.0
+      },
+      "seconds": 25.99,
+      "gaps": [
+        "未执行复现验证（verify=none），未获得 case-3 缓存操作的复现结果与健康对照。",
+        "未确认 Redis 中该 key 的实际字节内容与写入来源（是否还有其他写入方）。"
+      ],
+      "tokens": {
+        "prompt_tokens": 37068,
+        "completion_tokens": 5804,
+        "total_tokens": 42872
+      }
+    },
+    {
+      "id": "normal",
+      "run_id": "4a2f682d9b95445da75336f26d1b1b41",
+      "status": "insufficient",
+      "scores": {
+        "root_cause": 1.0,
+        "location": 1.0,
+        "evidence_valid": 1.0,
+        "verification": null,
+        "abstention": 1.0
+      },
+      "seconds": 21.98,
+      "gaps": [
+        "日志中无任何异常、堆栈帧或错误级别记录，仅有单条 INFO 成功信息。",
+        "无 correlation id，无法关联到具体请求或业务单号。",
+        "未提供失败请求的入参（business_no）与数据库/Redis 状态，无法判断三条潜在缺陷中哪条被触发。",
+        "本次 verify=none，未获得任何复现或健康对照结果，不能声明已验证。"
+      ],
+      "tokens": {
+        "prompt_tokens": 26633,
+        "completion_tokens": 4602,
+        "total_tokens": 31235
+      }
+    },
+    {
+      "id": "truncated",
+      "run_id": "487e6ff541954fdbb898353b65701bf6",
+      "status": "insufficient",
+      "scores": {
+        "root_cause": 1.0,
+        "location": 1.0,
+        "evidence_valid": 1.0,
+        "verification": null,
+        "abstention": 1.0
+      },
+      "seconds": 25.91,
+      "gaps": [
+        "日志被截断，frames 为空，无任何栈帧信息。",
+        "日志无时间戳与 correlation id，无法与请求或上游调用关联。",
+        "消息 \"upstream failed\" 在仓库源码中无匹配，无法映射到具体类/方法/行号。",
+        "未提供触发接口路径，无法确定对应 checkout/create/cache 中的哪一个操作。",
+        "未执行任何复现验证（verify=none），无验证结果。"
+      ],
+      "tokens": {
+        "prompt_tokens": 29333,
+        "completion_tokens": 5722,
+        "total_tokens": 35055
+      }
+    },
+    {
+      "id": "insufficient",
+      "run_id": "e28e8efffcfb4931961a16f8a3db20a8",
+      "status": "insufficient",
+      "scores": {
+        "root_cause": 1.0,
+        "location": 1.0,
+        "evidence_valid": 1.0,
+        "verification": null,
+        "abstention": 1.0
+      },
+      "seconds": 16.59,
+      "gaps": [
+        "日志仅 2 行、单帧，无 cause 链、无时间戳、无 correlation id，无法关联到任何业务操作。",
+        "仓库中不存在 remote.Client / Client.java，检索 remote、Client、Socket、IOException、send 均无匹配，日志与源码无法对应。",
+        "未提供任何配置（连接超时、重试、连接池）证据，无法判断 connection reset 的触发条件。",
+        "未执行任何复现验证（verify=none），且无构建/运行证据，不能推断 checkout/create/cache 任一用例。"
+      ],
+      "tokens": {
+        "prompt_tokens": 28438,
+        "completion_tokens": 2866,
+        "total_tokens": 31304
+      }
+    }
+  ],
+  "averages": {
+    "root_cause": 1.0,
+    "location": 1.0,
+    "evidence_valid": 1.0,
+    "verification": null,
+    "abstention": 1.0
+  }
+}

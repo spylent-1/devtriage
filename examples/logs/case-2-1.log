@@ -1,0 +1,4 @@
+2026-10-23T12:00:00 ERROR requestId=sample-2-1 Order request failed
+org.springframework.dao.DuplicateKeyException: operation failed
+	at dev.triage.lab.OrderService.create(OrderService.java:28)
+Caused by: java.sql.SQLIntegrityConstraintViolationException: Duplicate entry for key orders.business_no

@@ -1,0 +1,100 @@
+{
+  "date": "2026-10-26",
+  "model": "deepseek-chat",
+  "scope": "synthetic inputs and local lab; not production accuracy",
+  "results": [
+    {
+      "case": "normal",
+      "run_id": "78697533e28d41ca926003afdd40f71e",
+      "expected": "insufficient",
+      "status": "insufficient",
+      "evidence_count": 5,
+      "knowledge_count": 0,
+      "gaps": [
+        "日志无异常链与堆栈帧，无 correlation id，无法关联到具体请求。",
+        "无运行时指标（JVM、连接池、Redis、HTTP 状态码分布）。",
+        "无数据库会话信息，orders.business_no 唯一约束未知。",
+        "无 Redis 实际存储内容与序列化格式样本。",
+        "无部署版本与变更记录。",
+        "知识库检索无命中（嵌入端点不可用，仅关键词模式返回空）。",
+        "本次 verify=none，未获得任何复现或健康对照结果。"
+      ],
+      "passed": true
+    },
+    {
+      "case": "missing-source",
+      "run_id": "4898f17ee8014a4f96c7b3dbbdadb1f7",
+      "expected": "insufficient",
+      "status": "insufficient",
+      "evidence_count": 2,
+      "knowledge_count": 1,
+      "gaps": [
+        "仓库中不存在日志引用的 remote.Client / Client.java，无法核对第 42 行代码。",
+        "日志缺少时间戳、correlation id、异常 cause 链与上游调用栈，无法确定失败环节。",
+        "无运行时指标（连接数、线程栈、网络状态）、无数据库会话信息、无部署/变更记录。",
+        "仓库仅含一个合成示例文件 OrderService.java，且与日志栈帧无调用关系，无法进行源码级归因。",
+        "未执行任何实验室验证（verify=none），无复现结果。"
+      ],
+      "passed": true
+    },
+    {
+      "case": "rag",
+      "run_id": "68c93cecd2e646b2b10a5b6841fd3e17",
+      "expected": "insufficient",
+      "status": "insufficient",
+      "evidence_count": 2,
+      "knowledge_count": 1,
+      "gaps": [
+        "缺少 HikariCP/DataSource 配置（仓库内无 hikari、maximumPoolSize、datasource 相关配置），无法判断池容量与超时参数。",
+        "缺少运行时指标：active/idle/pending 连接数、等待队列、连接获取耗时。",
+        "缺少数据库侧证据：活动会话、锁等待、慢 SQL 日志。",
+        "缺少线程栈，无法判断是否存在长事务或连接泄漏。",
+        "日志无时间戳与 correlation id，无法关联并发量与故障时段。",
+        "未执行任何实验验证（verify=none），无法复现。"
+      ],
+      "passed": true
+    },
+    {
+      "case": "case-1",
+      "run_id": "0ad1dd0702c843cc998d0b0d5f2dea3e",
+      "expected": "reproduced",
+      "status": "reproduced",
+      "evidence_count": 3,
+      "knowledge_count": 0,
+      "gaps": [
+        "缺少运行时指标、数据库会话与部署信息，无法确认触发请求的具体 businessNo 及 orders 表数据状态。",
+        "日志中无 correlation id，无法关联上游调用方与请求参数。",
+        "知识库检索无匹配历史案例（嵌入服务不可用，仅关键词模式返回空），未获得可引用的历史参考。"
+      ],
+      "passed": true
+    },
+    {
+      "case": "case-2",
+      "run_id": "9b4b49180bb1402c8b2b800743e338fb",
+      "expected": "reproduced",
+      "status": "reproduced",
+      "evidence_count": 6,
+      "knowledge_count": 0,
+      "gaps": [
+        "缺少数据库会话/实际表数据快照，无法确认该 business_no 是首次插入还是重复提交（仅由唯一约束冲突推断）。",
+        "缺少应用运行时指标（请求量、重试次数、上游调用方信息）与部署变更记录，无法判断重复提交的触发来源。",
+        "未检索到与该 DuplicateKey 场景匹配的历史知识条目（唯一命中为 Redis 缓存击穿文档，与本次问题无关）。"
+      ],
+      "passed": true
+    },
+    {
+      "case": "case-3",
+      "run_id": "230e1e9db9a54e88b7c297fcd5fe1af4",
+      "expected": "reproduced",
+      "status": "reproduced",
+      "evidence_count": 4,
+      "knowledge_count": 0,
+      "gaps": [
+        "无 Redis 运行时观测（键的实际类型、TTL、写入方），无法确认脏数据来源与影响范围。",
+        "无应用指标/链路追踪数据，无法评估该错误的发生频率与影响面。",
+        "未检索到可用的历史知识库条目（search_knowledge 返回空）。"
+      ],
+      "passed": true
+    }
+  ]
+}

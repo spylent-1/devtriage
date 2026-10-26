@@ -1,0 +1,4 @@
+* text=auto eol=lf
+# Preserve whitespace inside historical log excerpts used as evidence.
+docs/evidence/*-report.md whitespace=-blank-at-eol
+docs/evidence/**/*-report.md whitespace=-blank-at-eol

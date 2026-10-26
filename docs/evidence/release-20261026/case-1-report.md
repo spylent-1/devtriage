@@ -1,0 +1,175 @@
+# DevTriage 0ad1dd0702c843cc998d0b0d5f2dea3e
+
+状态：reproduced
+
+GET /orders/{id} 请求处理失败，抛出 java.lang.NullPointerException: Cannot invoke "String.toUpperCase()" because "customer" is null，异常链顶端为 dev.triage.lab.OrderService.checkout(OrderService.java:24)，由 OrderController.checkout(OrderController.java:11) 调用，最终由 Tomcat 的 dispatcherServlet 记录 ERROR 日志（2026-10-26T06:03:15.437Z）。
+
+## 根因
+
+OrderService.checkout 中先执行 jdbc.queryForList("SELECT customer FROM orders WHERE business_no = ?")，当该 business_no 在 orders 表中不存在（或 customer 列为 NULL）时返回空列表，代码用 names.isEmpty() ? null : names.getFirst() 得到 customer = null，随后未做空值判断直接调用 customer.toUpperCase()，触发 NPE。即缺少“订单不存在/客户名为空”的防御性校验与业务异常处理。
+
+位置：src/main/java/dev/triage/lab/OrderService.java#checkout:21-25
+
+## 修复建议
+
+- 在 OrderService.checkout 中对 customer 做空值判断：为空时抛出明确的业务异常（如 OrderNotFoundException / IllegalArgumentException），由 @ControllerAdvice 映射为 404 或 400，而不是 500 NPE。
+
+- 确认查询语义：若 customer 列可为 NULL，使用 Optional.ofNullable 或 SQL 层 COALESCE/默认值，并在日志中记录 businessNo 便于定位。
+
+- 为 /orders/{id} 增加入参校验（@PathVariable 非空、格式校验），并对不存在订单的请求补充监控指标与告警。
+
+- 补充针对“订单不存在”路径的单元测试，覆盖空列表与 NULL 列两种情形。
+
+## 证据缺口
+
+- 缺少运行时指标、数据库会话与部署信息，无法确认触发请求的具体 businessNo 及 orders 表数据状态。
+
+- 日志中无 correlation id，无法关联上游调用方与请求参数。
+
+- 知识库检索无匹配历史案例（嵌入服务不可用，仅关键词模式返回空），未获得可引用的历史参考。
+
+## 验证
+
+- case-1: reproduced=True, healthy=True; JUnit XML + expected stack + assertions; artifacts=.devtriage\lab\eb727f73a23f; exit=0
+
+## 证据
+
+### 077924f2951113f6 @log:1-58
+
+SHA256: dbb0aca7ee47e27d8fd23abd03e6b1a5b125836a8258ad41c8bb2e2b0e4c660b
+
+```text
+
+app-1  | 2026-10-26T06:03:15.437Z ERROR 1 --- [nio-8080-exec-1] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: java.lang.NullPointerException: Cannot invoke "String.toUpperCase()" because "customer" is null] with root cause
+app-1  | 
+app-1  | java.lang.NullPointerException: Cannot invoke "String.toUpperCase()" because "customer" is null
+app-1  | 	at dev.triage.lab.OrderService.checkout(OrderService.java:24) ~[!/:0.1.0]
+app-1  | 	at dev.triage.lab.OrderController.checkout(OrderController.java:11) ~[!/:0.1.0]
+app-1  | 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[na:na]
+app-1  | 	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[na:na]
+app-1  | 	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258) ~[spring-web-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:191) ~[spring-web-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:991) ~[spring-webmvc-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:896) ~[spring-webmvc-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.12.jar!/:6.2.12]
+app-1  | 	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.12.jar!/:6.2.12]
+app-1  | 	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:110) ~[spring-web-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.12.jar!/:6.2.12]
+app-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:88) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1774) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:973) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:491) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.48.jar!/:na]
+app-1  | 	at java.base/java.lang.Thread.run(Unknown Source) ~[na:na]
+app-1  | 
+
+```
+
+### 9f1d5621d11c1519 src/main/java/dev/triage/lab/OrderService.java:1-37
+
+SHA256: 345e419ce4befc86985b025c4292f3e9a8509289f914c4b02e46db9366b7c921
+
+```text
+
+package dev.triage.lab;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.stereotype.Service;
+
+@Service
+public class OrderService {
+    private final JdbcTemplate jdbc;
+    private final StringRedisTemplate redis;
+
+    public OrderService(JdbcTemplate jdbc, StringRedisTemplate redis) {
+        this.jdbc = jdbc;
+        this.redis = redis;
+    }
+
+    public String checkout(String businessNo) {
+        List<String> names = jdbc.queryForList(
+            "SELECT customer FROM orders WHERE business_no = ?", String.class, businessNo);
+        String customer = names.isEmpty() ? null : names.getFirst();
+        return customer.toUpperCase();
+    }
+
+    public void create(String businessNo) {
+        jdbc.update("INSERT INTO orders(business_no, customer) VALUES (?, ?)", businessNo, "Alice");
+    }
+
+    public Object cache(String businessNo) {
+        String key = "order:" + businessNo;
+        redis.opsForValue().set(key, "{\"customer\":\"Alice\"}");
+        String raw = redis.opsForValue().get(key);
+        return new JdkSerializationRedisSerializer().deserialize(raw.getBytes(StandardCharsets.UTF_8));
+    }
+}
+
+```
+
+### 2e25da36001e4427 src/main/java/dev/triage/lab/OrderController.java:1-16
+
+SHA256: 0800a34cb1e20f05981478cb6b29a461817e2ceee9b75197970387b229a28b61
+
+```text
+
+package dev.triage.lab;
+
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/orders")
+public class OrderController {
+    private final OrderService service;
+    public OrderController(OrderService service) { this.service = service; }
+    @GetMapping("/{id}")
+    public String checkout(@PathVariable String id) { return service.checkout(id); }
+    @PostMapping("/{id}")
+    public void create(@PathVariable String id) { service.create(id); }
+    @GetMapping("/{id}/cache")
+    public Object cache(@PathVariable String id) { return service.cache(id); }
+}
+
+```
+
+## 历史知识参考（不代表当前故障已验证）

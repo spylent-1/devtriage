@@ -1,0 +1,50 @@
+name: devtriage-lab
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: orders
+      MYSQL_USER: lab
+      MYSQL_PASSWORD: lab-local-only
+      MYSQL_ROOT_PASSWORD: root-local-only
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [CMD-SHELL, "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+  redis:
+    image: redis:7.4
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  app:
+    build: ./app
+    ports: ["127.0.0.1:18080:8080"]
+    depends_on:
+      mysql: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: [CMD-SHELL, "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+  tests:
+    image: maven:3.9-eclipse-temurin-21
+    profiles: [tools]
+    working_dir: /workspace
+    volumes:
+      - ./app:/workspace:ro
+      - maven-cache:/root/.m2
+      - test-output:/results
+    entrypoint: [mvn, -B, -Dmaven.repo.local=/root/.m2/repository, -Dlab.build.dir=/results]
+    depends_on:
+      mysql: {condition: service_healthy}
+      redis: {condition: service_healthy}
+volumes:
+  mysql-data:
+  maven-cache:
+  test-output:

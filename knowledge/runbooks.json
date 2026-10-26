@@ -1,0 +1,22 @@
+[
+  {
+    "id": "spring-self-invocation", "title": "Spring 同类调用与事务代理排查", "source": "curated://devtriage/spring-self-invocation", "revision": "1", "component": "spring-tx", "versions": ["6"],
+    "content": "适用：Spring 代理模式的声明式事务。此文是人工整理的排障指南，不是生产故障记录。\n症状：方法标注 @Transactional，但异常后写入未按预期回滚。\n候选原因：同一个实例内部直接调用事务方法，调用未经过 Spring 代理。\n检查：找到调用入口和被调用方法，核对 Bean 边界、代理模式、异常类型与事务传播配置。\n反例：AspectJ 编织模式不能直接套用代理模式结论；异常被捕获、默认不回滚的受检异常也可能造成相似现象。\n验证：通过外部 Bean 调用与同类内部调用对比数据库最终状态，不仅检查是否抛异常。\n建议：将事务操作放到独立服务 Bean，通过代理入口调用；依据业务需求配置回滚规则。"
+  },
+  {
+    "id": "hikari-timeout", "title": "HikariCP 获取连接超时排查", "source": "curated://devtriage/hikari-timeout", "revision": "1", "component": "hikari",
+    "content": "适用：HikariCP 连接池。此文为排障指南，不能替代运行时证据。\n症状：Connection is not available, request timed out；数据库连接池耗尽，请求等待获取连接。\n先收集 active、idle、pending 连接数、数据库活动会话、慢 SQL 和线程栈。\n候选原因：慢 SQL、长事务、连接泄漏、数据库不可达，或并发量超出当前容量。\n区分方法：长事务需检查事务持续时间和锁等待；连接泄漏需跟踪借出未归还的调用路径；数据库不可达需独立检查网络和认证。\n不要仅根据获取连接超时就断言连接泄漏，也不要先盲目增大 maximumPoolSize。\n验证：在隔离环境改变 SQL 延迟或事务范围，观察 pending 与响应时延变化。"
+  },
+  {
+    "id": "mysql-deadlock", "title": "MySQL 事务死锁排查", "source": "curated://devtriage/mysql-deadlock", "revision": "1", "component": "mysql", "versions": ["8.4"],
+    "content": "症状：Deadlock found when trying to get lock；MySQL 事务死锁。此文为整理的运行手册。\n收集死锁报告、涉及的 SQL、事务边界、索引与锁定记录；不要把锁等待超时直接等同于死锁。\n候选原因：两个事务按不同顺序更新相同记录，形成循环等待。\n验证：构造两个并发事务按相反更新顺序执行，记录实际死锁报告；按一致顺序更新作为对照。\n建议：统一记录访问顺序，缩短事务，并在具备幂等保障时有限重试整个事务。"
+  },
+  {
+    "id": "retry-idempotency", "title": "请求重试与幂等键设计", "source": "curated://devtriage/retry-idempotency", "revision": "1", "component": "http",
+    "content": "症状：客户端超时后重试，出现重复业务写入。此文为设计检查清单。\n请求超时不意味着服务端未提交；先核对请求关联 ID、业务唯一键、事务提交记录与网关重试设置。\n候选原因：首次请求已成功，重试请求未使用同一幂等键；也可能是两个合法请求错误共用业务编号。\n建议：使用业务稳定的幂等键和数据库唯一约束，并明确重复请求应返回的业务结果。\n验证：模拟服务端提交后响应丢失，再发送相同幂等键；同时检查并发提交和回滚重试。"
+  },
+  {
+    "id": "redis-hot-expiry", "title": "Redis 热点缓存过期与回源流量", "source": "curated://devtriage/redis-hot-expiry", "revision": "1", "component": "redis",
+    "content": "症状：热点缓存过期时，大量请求同时回源数据库，出现流量尖峰。此文为排障指南。\n检查缓存命中率、key 的 TTL 分布、业务流量和数据库查询量时间线。\n区分单个热点失效造成的击穿、大量 key 同时失效造成的雪崩，以及查询不存在数据造成的穿透。\n建议：根据问题选择互斥重建、逻辑过期、TTL 随机抖动或空值缓存，不能把所有情况都归为缓存击穿。\n验证：控制并发请求与 TTL，比较开启保护前后的实际回源次数。"
+  }
+]

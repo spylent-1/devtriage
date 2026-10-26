@@ -1,0 +1,64 @@
+name: checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  python:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+      - if: runner.os == 'Windows'
+        run: choco install ripgrep -y --no-progress
+      - run: python -m pip install -e '.[dev]'
+      - run: python -m pip check
+      - run: python -m pytest -q
+      - run: python -m build --wheel
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install -e '.[dev]'
+      - run: docker compose -f lab/compose.yaml config --quiet
+      - run: docker compose -f lab/compose.yaml up -d --build --wait
+      - name: Warm Maven cache and run all Java assertions
+        run: docker compose -f lab/compose.yaml run --rm tests test
+      - name: Verify isolated cases through the Python executor
+        run: python -m pytest tests/test_core.py -k test_live_lab -q
+        env:
+          DEVTRIAGE_LAB_INTEGRATION: '1'
+      - if: always()
+        run: docker compose -f lab/compose.yaml logs --no-color
+      - if: always()
+        run: docker compose -f lab/compose.yaml down
+  rag-postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: devtriage_test
+          POSTGRES_USER: devtriage
+          POSTGRES_PASSWORD: test-only
+        ports: ["15432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U devtriage -d devtriage_test"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install -e '.[dev,rag-postgres]'
+      - run: python -m pytest tests/test_knowledge.py -q
+        env:
+          DEVTRIAGE_TEST_RAG_DSN: postgresql://devtriage:test-only@localhost:15432/devtriage_test

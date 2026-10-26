@@ -1,0 +1,342 @@
+{
+  "dataset": "retrieval.json",
+  "scope": "retrieval smoke/development set; not diagnosis accuracy",
+  "modes": {
+    "keyword": {
+      "averages": {
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "abstention": 1.0
+      },
+      "items": [
+        {
+          "id": "transaction-boundary",
+          "requested_mode": "keyword",
+          "actual_mode": "keyword",
+          "found": [
+            "spring-self-invocation"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": null,
+          "seconds": 0.0
+        },
+        {
+          "id": "pool-identifier",
+          "requested_mode": "keyword",
+          "actual_mode": "keyword",
+          "found": [
+            "hikari-timeout"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": null,
+          "seconds": 0.0
+        },
+        {
+          "id": "pool-chinese",
+          "requested_mode": "keyword",
+          "actual_mode": "keyword",
+          "found": [
+            "hikari-timeout",
+            "redis-hot-expiry"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": null,
+          "seconds": 0.0
+        },
+        {
+          "id": "deadlock",
+          "requested_mode": "keyword",
+          "actual_mode": "keyword",
+          "found": [
+            "mysql-deadlock"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": null,
+          "seconds": 0.0
+        },
+        {
+          "id": "retry",
+          "requested_mode": "keyword",
+          "actual_mode": "keyword",
+          "found": [
+            "retry-idempotency"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": null,
+          "seconds": 0.0
+        },
+        {
+          "id": "cache",
+          "requested_mode": "keyword",
+          "actual_mode": "keyword",
+          "found": [
+            "redis-hot-expiry"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": null,
+          "seconds": 0.0
+        },
+        {
+          "id": "unknown",
+          "requested_mode": "keyword",
+          "actual_mode": "keyword",
+          "found": [],
+          "recall_at_5": null,
+          "mrr": null,
+          "abstention": true,
+          "warning": null,
+          "seconds": 0.0
+        },
+        {
+          "id": "version-mismatch",
+          "requested_mode": "keyword",
+          "actual_mode": "not_needed",
+          "found": [],
+          "recall_at_5": null,
+          "mrr": null,
+          "abstention": true,
+          "warning": null,
+          "seconds": 0.0
+        }
+      ],
+      "fallback_averages": null,
+      "fully_available": true
+    },
+    "dense": {
+      "averages": null,
+      "items": [
+        {
+          "id": "transaction-boundary",
+          "requested_mode": "dense",
+          "actual_mode": "keyword",
+          "found": [
+            "spring-self-invocation"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "pool-identifier",
+          "requested_mode": "dense",
+          "actual_mode": "keyword",
+          "found": [
+            "hikari-timeout"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "pool-chinese",
+          "requested_mode": "dense",
+          "actual_mode": "keyword",
+          "found": [
+            "hikari-timeout",
+            "redis-hot-expiry"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "deadlock",
+          "requested_mode": "dense",
+          "actual_mode": "keyword",
+          "found": [
+            "mysql-deadlock"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "retry",
+          "requested_mode": "dense",
+          "actual_mode": "keyword",
+          "found": [
+            "retry-idempotency"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "cache",
+          "requested_mode": "dense",
+          "actual_mode": "keyword",
+          "found": [
+            "redis-hot-expiry"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "unknown",
+          "requested_mode": "dense",
+          "actual_mode": "keyword",
+          "found": [],
+          "recall_at_5": null,
+          "mrr": null,
+          "abstention": true,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "version-mismatch",
+          "requested_mode": "dense",
+          "actual_mode": "not_needed",
+          "found": [],
+          "recall_at_5": null,
+          "mrr": null,
+          "abstention": true,
+          "warning": null,
+          "seconds": 0.016
+        }
+      ],
+      "fallback_averages": {
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "abstention": 1.0
+      },
+      "fully_available": false
+    },
+    "hybrid": {
+      "averages": null,
+      "items": [
+        {
+          "id": "transaction-boundary",
+          "requested_mode": "hybrid",
+          "actual_mode": "keyword",
+          "found": [
+            "spring-self-invocation"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "pool-identifier",
+          "requested_mode": "hybrid",
+          "actual_mode": "keyword",
+          "found": [
+            "hikari-timeout"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "pool-chinese",
+          "requested_mode": "hybrid",
+          "actual_mode": "keyword",
+          "found": [
+            "hikari-timeout",
+            "redis-hot-expiry"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "deadlock",
+          "requested_mode": "hybrid",
+          "actual_mode": "keyword",
+          "found": [
+            "mysql-deadlock"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "retry",
+          "requested_mode": "hybrid",
+          "actual_mode": "keyword",
+          "found": [
+            "retry-idempotency"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "cache",
+          "requested_mode": "hybrid",
+          "actual_mode": "keyword",
+          "found": [
+            "redis-hot-expiry"
+          ],
+          "recall_at_5": 1.0,
+          "mrr": 1.0,
+          "abstention": null,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "unknown",
+          "requested_mode": "hybrid",
+          "actual_mode": "keyword",
+          "found": [],
+          "recall_at_5": null,
+          "mrr": null,
+          "abstention": true,
+          "warning": "no_compatible_embeddings; reindex with configured endpoint/model",
+          "seconds": 0.0
+        },
+        {
+          "id": "version-mismatch",
+          "requested_mode": "hybrid",
+          "actual_mode": "not_needed",
+          "found": [],
+          "recall_at_5": null,
+          "mrr": null,
+          "abstention": true,
+          "warning": null,
+          "seconds": 0.0
+        }
+      ],
+      "fallback_averages": {
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "abstention": 1.0
+      },
+      "fully_available": false
+    }
+  }
+}

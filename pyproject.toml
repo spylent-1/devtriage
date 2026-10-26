@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "devtriage"
+version = "0.2.0"
+description = "Evidence-backed Java incident diagnosis agent"
+readme = "README.md"
+license = "MIT"
+authors = [{name = "spylent-1"}]
+keywords = ["java", "incident-diagnosis", "ai-agent", "rag"]
+requires-python = ">=3.12"
+dependencies = ["httpx>=0.28,<1", "pydantic>=2.10,<3", "pydantic-settings>=2.7,<3", "openai>=1.60,<3", "tree-sitter>=0.25,<0.26", "tree-sitter-java>=0.23,<0.24", "langfuse>=4,<5", "opentelemetry-api>=1.30,<2"]
+
+[project.optional-dependencies]
+rag-postgres = ["psycopg[binary]>=3.2,<4"]
+dev = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2", "PyYAML>=6,<7", "build>=1,<2", "setuptools>=75", "wheel>=0.45"]
+
+[project.scripts]
+devtriage = "devtriage.cli:main"
+
+[project.urls]
+Repository = "https://github.com/spylent-1/devtriage"
+Documentation = "https://github.com/spylent-1/devtriage#readme"
+Issues = "https://github.com/spylent-1/devtriage/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

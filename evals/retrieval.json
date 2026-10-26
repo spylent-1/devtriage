@@ -1,0 +1,10 @@
+[
+  {"id":"transaction-boundary", "query":"同一个服务内部调用带事务注解的方法，为什么异常后数据还在", "component":"spring-tx", "version":"6", "expected":["spring-self-invocation"]},
+  {"id":"pool-identifier", "query":"HikariCP Connection is not available request timed out", "expected":["hikari-timeout"]},
+  {"id":"pool-chinese", "query":"连接池耗尽，怎么区分慢查询和连接泄漏", "expected":["hikari-timeout"]},
+  {"id":"deadlock", "query":"Deadlock found when trying to get lock", "component":"mysql", "version":"8.4", "expected":["mysql-deadlock"]},
+  {"id":"retry", "query":"服务端已经提交但客户端超时重试，如何避免重复业务写入", "component":"http", "expected":["retry-idempotency"]},
+  {"id":"cache", "query":"热点缓存同时过期回源数据库", "component":"redis", "expected":["redis-hot-expiry"]},
+  {"id":"unknown", "query":"ZebraQuantumException", "expected":[]},
+  {"id":"version-mismatch", "query":"Deadlock found when trying to get lock", "component":"mysql", "version":"5.7", "expected":[]}
+]

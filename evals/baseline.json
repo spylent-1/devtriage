@@ -1,0 +1,155 @@
+[
+  {
+    "id": "case-1-1",
+    "log": "examples/logs/case-1-1.log",
+    "expected": {
+      "labels": [
+        "null_pointer",
+        "null_pointer_exception",
+        "missing_order",
+        "null_dereference"
+      ],
+      "method": "checkout"
+    }
+  },
+  {
+    "id": "case-1-2",
+    "log": "examples/logs/case-1-2.log",
+    "expected": {
+      "labels": [
+        "null_pointer",
+        "null_pointer_exception",
+        "missing_order",
+        "null_dereference"
+      ],
+      "method": "checkout"
+    }
+  },
+  {
+    "id": "case-1-3",
+    "log": "examples/logs/case-1-3.log",
+    "expected": {
+      "labels": [
+        "null_pointer",
+        "null_pointer_exception",
+        "missing_order",
+        "null_dereference"
+      ],
+      "method": "checkout"
+    }
+  },
+  {
+    "id": "case-2-1",
+    "log": "examples/logs/case-2-1.log",
+    "expected": {
+      "labels": [
+        "duplicate_key",
+        "duplicate_key_exception",
+        "duplicate_order",
+        "unique_constraint"
+      ],
+      "method": "create"
+    }
+  },
+  {
+    "id": "case-2-2",
+    "log": "examples/logs/case-2-2.log",
+    "expected": {
+      "labels": [
+        "duplicate_key",
+        "duplicate_key_exception",
+        "duplicate_order",
+        "unique_constraint"
+      ],
+      "method": "create"
+    }
+  },
+  {
+    "id": "case-2-3",
+    "log": "examples/logs/case-2-3.log",
+    "expected": {
+      "labels": [
+        "duplicate_key",
+        "duplicate_key_exception",
+        "duplicate_order",
+        "unique_constraint"
+      ],
+      "method": "create"
+    }
+  },
+  {
+    "id": "case-3-1",
+    "log": "examples/logs/case-3-1.log",
+    "expected": {
+      "labels": [
+        "serialization_mismatch",
+        "redis_serialization",
+        "serialization_error",
+        "serialization_exception"
+      ],
+      "method": "cache"
+    }
+  },
+  {
+    "id": "case-3-2",
+    "log": "examples/logs/case-3-2.log",
+    "expected": {
+      "labels": [
+        "serialization_mismatch",
+        "redis_serialization",
+        "serialization_error",
+        "serialization_exception"
+      ],
+      "method": "cache"
+    }
+  },
+  {
+    "id": "case-3-3",
+    "log": "examples/logs/case-3-3.log",
+    "expected": {
+      "labels": [
+        "serialization_mismatch",
+        "redis_serialization",
+        "serialization_error",
+        "serialization_exception"
+      ],
+      "method": "cache"
+    }
+  },
+  {
+    "id": "normal",
+    "log": "examples/logs/normal.log",
+    "expected": {
+      "labels": [
+        "unknown",
+        "insufficient",
+        "none"
+      ],
+      "method": ""
+    }
+  },
+  {
+    "id": "truncated",
+    "log": "examples/logs/truncated.log",
+    "expected": {
+      "labels": [
+        "unknown",
+        "insufficient",
+        "none"
+      ],
+      "method": ""
+    }
+  },
+  {
+    "id": "insufficient",
+    "log": "examples/logs/insufficient.log",
+    "expected": {
+      "labels": [
+        "unknown",
+        "insufficient",
+        "none"
+      ],
+      "method": ""
+    }
+  }
+]
