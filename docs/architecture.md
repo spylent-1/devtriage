@@ -2,7 +2,7 @@
 
 ```mermaid
 flowchart LR
-    CLI --> Agent[ReAct Loop]
+    CLI --> Agent[LangGraph StateGraph]
     Agent <--> Model[OpenAI-compatible Provider]
     Agent <--> Tools[Typed ToolRegistry]
     Tools --> Logs[Java 日志解析]
@@ -14,6 +14,8 @@ flowchart LR
 ```
 
 `DiagnosisRequest` 包含 repo、log 和 verify。`ToolCall`、`ToolResult` 为工具协议；每个工具参数使用拒绝额外字段的 Pydantic 模型。`EvidenceRef` 包含稳定 ID、相对文件路径、完整起止行、文件 SHA256、脱敏文本和证据类型。`VerificationResult` 保存独立实验的异常复现与健康对照结果。模型生成的 verification/evidence 实体不会直接采信，最终由执行器实际结果覆盖。
+
+0.3.0 使用 LangGraph StateGraph 编排日志解析、模型决策、顺序工具执行和报告校验；校验失败返回模型修正，轮次限制按模型调用计数。状态图不提供任务恢复。
 
 一次诊断创建独立 Repository、ToolRegistry 与 SQLite run；模型根据观察结果决定下一工具。每次模型调用/工具执行写事件。模型不拥有 subprocess 参数拼接或工具权限控制能力。`CodeSearch` Protocol 是未来语义检索的替换点；新增检索器仍须返回统一证据，向量命中内容不能绕过文件校验。
 

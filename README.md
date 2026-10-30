@@ -10,6 +10,8 @@
 
 **日志 → 源码检索 → 故障假设 → 受控实验 → 证据报告**
 
+0.3.0 将诊断主流程迁移到 LangGraph 状态图；保留既有工具权限、证据校验和 CLI。详见 [版本变更](docs/changelog.md)。
+
 [快速开始](#quick-start) · [报告示例](#report-example) · [架构设计](docs/architecture.md) · [验证记录](docs/validation.md) · [RAG 文档](docs/rag.md)
 
 ## 为什么做这个项目
@@ -39,7 +41,7 @@
 
 | 能力 | 实现与边界 |
 | --- | --- |
-| 自主源码定位 | 自研 ReAct 循环、Tool Calling、ripgrep 字面检索、Tree-sitter Java 符号定位 |
+| 自主源码定位 | LangGraph StateGraph 编排 ReAct 工具循环、Tool Calling、ripgrep 字面检索、Tree-sitter Java 符号定位 |
 | 可核验证据 | 执行器生成引用，报告结束前重验文件指纹；拒绝未知或过期证据 |
 | 受控实验 | 仅执行内置案例，逐次隔离输出，检查 JUnit 断言、预期异常、栈帧和健康对照 |
 | 历史知识 RAG | BM25 + 可选 Embedding/RRF；默认 SQLite，可选 PostgreSQL/pgvector；历史引用单独保存 |
@@ -51,7 +53,7 @@
 
 ```mermaid
 flowchart LR
-    Input[Java 日志与源码] --> Agent[Python ReAct Agent]
+    Input[Java 日志与源码] --> Agent[LangGraph StateGraph 诊断流程]
     Agent --> Tools[类型化工具注册表]
     Tools --> Source[ripgrep / Java AST / 日志解析]
     Tools --> Knowledge[历史知识检索]

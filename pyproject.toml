@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "devtriage"
-version = "0.2.0"
+version = "0.3.0"
 description = "Evidence-backed Java incident diagnosis agent"
 readme = "README.md"
 license = "MIT"
 authors = [{name = "spylent-1"}]
 keywords = ["java", "incident-diagnosis", "ai-agent", "rag"]
 requires-python = ">=3.12"
-dependencies = ["httpx>=0.28,<1", "pydantic>=2.10,<3", "pydantic-settings>=2.7,<3", "openai>=1.60,<3", "tree-sitter>=0.25,<0.26", "tree-sitter-java>=0.23,<0.24", "langfuse>=4,<5", "opentelemetry-api>=1.30,<2"]
+dependencies = ["langgraph>=1.2.18,<2", "httpx>=0.28,<1", "pydantic>=2.10,<3", "pydantic-settings>=2.7,<3", "openai>=1.60,<3", "tree-sitter>=0.25,<0.26", "tree-sitter-java>=0.23,<0.24", "langfuse>=4,<5", "opentelemetry-api>=1.30,<2"]
 
 [project.optional-dependencies]
 rag-postgres = ["psycopg[binary]>=3.2,<4"]
@@ -31,3 +31,4 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+
