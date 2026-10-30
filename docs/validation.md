@@ -1,6 +1,12 @@
 # 0.3.0 迁移验证
 
-LangGraph 版本的本地自动测试、集成检查和真实模型冒烟以对应运行记录和 CI 为准。下面的 0.2.0 记录是历史结果，不代表 0.3.0 已复测。真实模型验收结果在完成后单独记录。
+日期：2026-10-30（Asia/Shanghai）。本地 Python 自动测试 50 passed、4 skipped；独立实验场 JUnit 6 passed。Windows 干净环境按锁文件安装、pip check 和 wheel 构建通过。
+
+真实模型冒烟覆盖六个场景：正常日志、源码不匹配和 RAG 证据不足均为 `insufficient`；三个实验故障均为 `reproduced`，对应异常断言与健康对照通过。[逐项任务和结果](evidence/release-20261030/summary.json)。这些是本地实验与合成输入，不能外推生产准确率。
+
+本地全新实验镜像构建时 Ubuntu 软件源返回 502，因此本次实验复用了本机既有镜像；GitHub Actions 以全新 runner 构建实验场并执行集成验证。Windows、Linux、Docker/JUnit 和 PostgreSQL/pgvector 的具体结果以 [Actions](https://github.com/spylent-1/devtriage/actions) 对应提交为准。Embedding 服务与 Langfuse 云端仍未验收。
+
+下面的 0.2.0 记录是历史结果，不代表 0.3.0 测试数据。
 
 ---
 
